@@ -1,4 +1,7 @@
 <?php
+
+use yii\web\Response;
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -14,6 +17,18 @@ return [
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
+        ],
+        'response' => [
+            'class' => 'yii\web\Response',
+            'on beforeSend' => function ($event) {
+                $response = $event->sender;
+                if (in_array($response->format, [Response::FORMAT_JSON, Response::FORMAT_XML])) {
+                    $response->data = [
+                        'success' => $response->isSuccessful,
+                        'result' => $response->data,
+                    ];
+                }
+            },
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -36,14 +51,16 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-            ],
+                'GET v1/rates' => 'rates/index',
+                'GET v1/rates/<code:\w+>' => 'rates/view',
+            ]
         ],
-        */
+
+
     ],
     'params' => $params,
 ];

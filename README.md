@@ -1,60 +1,51 @@
-<p align="center">
-    <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
-    </a>
-    <h1 align="center">Yii 2 Advanced Project Template</h1>
-    <br>
-</p>
+<h2>Тестовое задание</h2>
+<p>Необходимо реализовать сервис, выдающий текущий курс валюты и историю изменения курса через HTTP REST API, с доступом только для авторизованных пользователей. Фреймворк Yii2/Laravel. В результате должна быть ссылка на репозиторий.</p>
 
-Yii 2 Advanced Project Template is a skeleton [Yii 2](http://www.yiiframework.com/) application best for
-developing complex Web applications with multiple tiers.
 
-The template includes three tiers: front end, back end, and console, each of which
-is a separate Yii application.
+<h3>Деплоймент</h3>
 
-The template is designed to work in a team development environment. It supports
-deploying the application in different environments.
+- клонуємо репозиторій: git clone https://github.com/id0790/rates.git
+- перехдимо в теку з проектом: cd rates
+- встановлення додатків: composer update
+- ініціалізація проекту: php init -> Вибираємо Development (Відкрив дебаг панель всім для підтвердження пошти)
+- Налаштовуємо базу в: common/config/main-local.php
+- Міграції: php yii migrate/up
 
-Documentation is at [docs/guide/README.md](docs/guide/README.md).
+<h3>Запуск</h3>
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Build Status](https://travis-ci.com/yiisoft/yii2-app-advanced.svg?branch=master)](https://travis-ci.com/yiisoft/yii2-app-advanced)
+- Отримуємо ключ: https://currencylayer.com/
+- Прописуємо ключ: common/config/params-local.php
+- Запускаємо імпорт валют: php yii rate/import USD,UAH,RUB,CAD
 
-DIRECTORY STRUCTURE
--------------------
+<h3>Функціонал</h3>
+- Отримати рейти: /v1/rates?code=UAH&from=2020-01-01&to=2021-01-01
+- Отримати рейт: /v1/rates/UAH
+- Реєстрація: /site/signup (Конфірм в дебагері) 
+- Авторизація: /site/login
 
-```
-common
-    config/              contains shared configurations
-    mail/                contains view files for e-mails
-    models/              contains model classes used in both backend and frontend
-    tests/               contains tests for common classes    
-console
-    config/              contains console configurations
-    controllers/         contains console controllers (commands)
-    migrations/          contains database migrations
-    models/              contains console-specific model classes
-    runtime/             contains files generated during runtime
-backend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains backend configurations
-    controllers/         contains Web controller classes
-    models/              contains backend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for backend application    
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-frontend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains frontend configurations
-    controllers/         contains Web controller classes
-    models/              contains frontend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for frontend application
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-    widgets/             contains frontend widgets
-vendor/                  contains dependent 3rd-party packages
-environments/            contains environment-based overrides
-```
+<h3>Приклад запиту апі</h3>
+GET https://адрес/v1/rates/UAH<br/>
+Accept: application/json<br/>
+Authorization: Basic dGVzdEB0ZXN0LmNvbTp0ZXN0QHRlc3QuY29t<br/>
+
+<h3>Структура</h3>
+
+- common/config/container.php - DI
+- common/services/RateService.php - основна логіка 
+- common/sources/ApiLayerSource.php - джерело імпорту валют. Підключення http клієнта через агрегацію
+- common/sources/Source.php - інтерфейс апі
+- common/sources/RateDto.php - dto для результату данних стронього апі
+- common/repositories/RateRepository.php - репозиторій для роботи з валютами. Потрібен був для реалізації batch insert. 
+- common/repositories/PersistRepository.php - інтерфейс для зберігання
+- common/repositories/Repository.php - загальний інтерфейс для роботи з репозиторієм
+- common/models/Rate.php - ентіті валюти
+- frontend/controllers/RatesController.php - апі
+
+<h3>Особливості реалізації</h3>
+- Акцент був на демонстрації коду в реалізації валют валют
+- Реєстрації, аутентифікації лише для прикладу. Взята з "коробки". Ніяким чином не модифікована. За умовами завдання реалізовувати не потрібно
+- Апі прикрито авторизацією(одна з умов завдання). Вибраний самий швидкий варіант HttpBasicAuth. На тому що було.  Не варто сприймати як пропозицію до реалізації в реальних умовах. Логін\пароль для запитів ніхто використовувати не збирається. Тут мав би бути який access_token. Можливо auth. Але все це виходить за рамки завдання 
+- Api можливо було винести в окремий application. Але на те не було часу і не дає великого сенсу враховуючи управління користувачами буде відокремлене від апі
+- В прикладі не використовується ніякого виду оптимізації(лише індекс). Деякі частини коду можна було реалізувати для більш швидкого відгуку АПІ. Прикрити кешем. Але то інша тема
+
+
