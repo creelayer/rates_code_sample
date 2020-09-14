@@ -33,24 +33,24 @@ class RatesController extends Controller
         $this->rateService = $rateService;
     }
 
-//    /**
-//     * @return array|array[]|\string[][]
-//     */
-//    public function behaviors()
-//    {
-//        $behaviors = parent::behaviors();
-//        $behaviors['basicAuth'] = [
-//            'class' => HttpBasicAuth::class,
-//            'auth' => function ($username, $password) {
-//                $user = User::findByUsername($username);
-//                if ($user && $user->validatePassword($password)) {
-//                    return $user;
-//                }
-//                return null;
-//            }
-//        ];
-//        return $behaviors;
-//    }
+    /**
+     * @return array|array[]|\string[][]
+     */
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['basicAuth'] = [
+            'class' => HttpBasicAuth::class,
+            'auth' => function ($username, $password) {
+                $user = User::findByUsername($username);
+                if ($user && $user->validatePassword($password)) {
+                    return $user;
+                }
+                return null;
+            }
+        ];
+        return $behaviors;
+    }
 
     /**
      * @return array
